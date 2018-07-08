@@ -93,7 +93,10 @@ request_routes.post('/new', (req, res) => {
 })
 
 //GET All requests
-request_routes.get("/all", (req, res) => {
+request_routes.get("/all",authenticationMiddleware(),(req, res) => {
+
+	console.log(req.user);
+	console.log(req.isAuthenticated());
 
 	dbcon.query("SELECT * FROM request", (err, results) => {
 		if (err) {
@@ -142,9 +145,16 @@ request_routes.get("/:id", (req, res) => {
 	
 
 })
+function authenticationMiddleware () {  
+	return (req, res, next) => {
+		console.log(`req.session.passport.user: ${JSON.stringify(req.session.passport)}`);
 
+	    if (req.isAuthenticated()) return next();
+	    res.redirect('/login')
+	}
+}
 
-module.exports = request_routes
+module.exports = request_routes;
 
 
 

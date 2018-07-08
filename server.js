@@ -15,7 +15,9 @@ var cookieParser = require('cookie-parser');
 //authentication packages
 var session = require('express-session'); 
 var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 var MySQLStore = require('express-mysql-session')(session);
+
 
 
 
@@ -52,6 +54,26 @@ var user_routes = require('./routes/user_routes')
 
 app.use('/api/req',request_routes);
 app.use('/api/user',user_routes);
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        console.log(username);
+        console.log(password);
+        var sql = "SELECT password FROM customer WHERE username= username UNION ALL SELECT password FROM drone_pilot WHERE username = username "
+        dbcon.query(sql,[username],function(err,results){
+            if (err) {done(err)};
+
+            if(results.length ==0){
+                done(null,false);
+            }
+            
+            console.log(results);
+
+        });
+        return done(null, 'dfbhj');
+     
+    }
+  ));
 
 
 

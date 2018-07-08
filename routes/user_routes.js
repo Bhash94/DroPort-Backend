@@ -4,6 +4,12 @@ const user_routes = require('express').Router();
 const dbcon = require('../dbconnection');
 var passport = require('passport');
 
+
+
+
+
+
+
 //GET All Customers
 user_routes.get('/cus', (req, res) => {
     console.log('user_routes called')
@@ -157,28 +163,19 @@ user_routes.post('/pil/new',(req,res)=>{
                 const user_id = results[0];
                 console.log(user_id);
                 // req.login(user_id, function(err){
-                //     res.redirect('pil_main_page')
-                    // res.send(" get user id ok");
+                //     res.redirect('/')
+                //     res.send(" get user id ok");
                 // });
-                res.json({
-                    id: user_id
+                // // res.json({
+                //     id: user_id
+                req.login(user_id,function(err){
+                res.redirect('/')
+                })
                 });
                 
                 
             });
-        }
-        // data_arr,(err,results)=>{
-        // if(err) throw err
-        // var results_data = []
-        // results_data = JSON.stringify(results)
-        // console.log(results_data)
-
-    )
-
-    // const url = 'http://localhost:4200/login'
-    // res.redirect(url)
-    // res.send(" POST New Pilot ok")
-});
+        });
 passport.serializeUser(function(user_id, done) {
     done(null, user_id);
   });
@@ -188,4 +185,23 @@ passport.serializeUser(function(user_id, done) {
 
   });
 
-module.exports = user_routes;
+//   function authenticationMiddleware () {  
+// 	return (req, res, next) => {
+// 		console.log(`req.session.passport.user: ${JSON.stringify(req.session.passport)}`);
+
+// 	    if (req.isAuthenticated()) return next();
+// 	    res.redirect('/login')
+// 	}
+// }
+
+//pilot login
+
+user_routes.post('/user/login',passport.authenticate(
+    'local',{
+        successRedirect: '/pil_main_page',
+        failureRedirect: '/login'
+    }
+));
+
+
+module.exports = user_routes
