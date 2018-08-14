@@ -29,7 +29,7 @@ user_routes.get('/cus', (req, res) => {
 user_routes.get('/cus/:id', (req, res) => {
     console.log('user_routes called')
     var id = req.body.id
-    dbcon.query("SELECT * FROM customer WHERE cus_id=?",id, (err, results) => {
+    dbcon.query("SELECT * FROM customer WHERE cus_id=?", id, (err, results) => {
         if (err) {
             console.log(err)
         }
@@ -60,7 +60,7 @@ user_routes.get('/pil', (req, res) => {
 user_routes.get('/pil/:id', (req, res) => {
     console.log('user_routes called')
     var id = req.body.id
-    dbcon.query('SELECT * FROM drone_pilot WHERE pil_id=?',id, (err, results) => {
+    dbcon.query('SELECT * FROM drone_pilot WHERE pil_id=?', id, (err, results) => {
         if (err) {
             console.log(err)
         }
@@ -91,7 +91,7 @@ user_routes.get('/own', (req, res) => {
 user_routes.get('/own/:id', (req, res) => {
     console.log('user_routes called')
     var id = req.body.id
-    dbcon.query("SELECT * FROM drone_owner WHERE own_id=?",id, (err, results) => {
+    dbcon.query("SELECT * FROM drone_owner WHERE own_id=?", id, (err, results) => {
         if (err) {
             console.log(err)
         }
@@ -122,7 +122,7 @@ user_routes.get('/admin', (req, res) => {
 user_routes.get('/admin/:id', (req, res) => {
     console.log('user_routes called')
     var id = req.body.id
-    dbcon.query("SELECT * FROM admin WHERE adm_id=?",id, (err, results) => {
+    dbcon.query("SELECT * FROM admin WHERE adm_id=?", id, (err, results) => {
         if (err) {
             console.log(err)
         }
@@ -135,12 +135,12 @@ user_routes.get('/admin/:id', (req, res) => {
 })
 
 //POST New Pilot
-user_routes.post('/pil/new',(req,res)=>{
+user_routes.post('/pil/new', (req, res) => {
     var fname = req.body.firstname
     var lname = req.body.lastname
     var dob = req.body.dob
-    var age = req.body.age    
-    var sex = req.body.sex
+    var age = req.body.age
+    var sex = req.body.sexdeere
     var nic = req.body.nic
     var mobile_no = req.body.mobile_no
     var fixed_no = req.body.fixed_no
@@ -152,38 +152,37 @@ user_routes.post('/pil/new',(req,res)=>{
 
     console.log(fname)
 
-    var data_arr = [username,password,fname,lname,dob,age,sex,nic,mobile_no,fixed_no,email,fb_link]
+    var data_arr = [username, password, fname, lname, dob, age, sex, nic, mobile_no, fixed_no, email, fb_link]
     var sql1 = "INSERT INTO drone_pilot(username ,password ,f_name ,l_name ,dob ,age ,sex ,nic ,mobile_no ,fixed_no ,email ,fb_link) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
     // var sql2 = "SELECT LAST_INSERT_ID() as user_id"
-    dbcon.query(sql1,data_arr,function(err,results){
+    dbcon.query(sql1, data_arr, function (err, results) {
+        if (err) throw err;
+
+        dbcon.query('SELECT LAST_INSERT_ID() as user_id', function (err, results) {
             if (err) throw err;
-
-            dbcon.query('SELECT LAST_INSERT_ID() as user_id', function(err,results){
-                if (err) throw err;
-                const user_id = results[0];
-                console.log(user_id);
-                // req.login(user_id, function(err){
-                //     res.redirect('/')
-                //     res.send(" get user id ok");
-                // });
-                // // res.json({
-                //     id: user_id
-                req.login(user_id,function(err){
+            const user_id = results[0];
+            console.log(user_id);
+            // req.login(user_id, function(err){
+            //     res.redirect('/')
+            //     res.send(" get user id ok");
+            // });
+            // // res.json({
+            //     id: user_id
+            req.login(user_id, function (err) {
                 res.redirect('/')
-                })
-                });
-                
-                
-            });
+            })
         });
-passport.serializeUser(function(user_id, done) {
-    done(null, user_id);
-  });
-  
-  passport.deserializeUser(function(user_id, done) {
-      done(null, user_id);
+    });
+});
 
-  });
+passport.serializeUser(function (user_id, done) {
+    done(null, user_id);
+});
+
+passport.deserializeUser(function (user_id, done) {
+    done(null, user_id);
+
+});
 
 //   function authenticationMiddleware () {  
 // 	return (req, res, next) => {
@@ -196,12 +195,29 @@ passport.serializeUser(function(user_id, done) {
 
 //pilot login
 
-user_routes.post('/user/login',passport.authenticate(
-    'local',{
-        successRedirect: '/pil_main_page',
-        failureRedirect: '/login'
-    }
-));
+// user_routes.post('/user/login',passport.authenticate(
+//     'local',{
+
+//         successRedirect: '/login',
+//         failureRedirect: '/login'
+//     }
+// ));
 
 
+// user_routes.post('/user/login', passport.authenticate('local'), (req, res) => {
+//     var user_id = req.body.username
+//     console.log("route got true")
+//     req.login(user_id, function (err) {
+//         res.redirect('/')
+//     })
+
+// });
+
+user_routes.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/',
+        failureFlash: true
+    })
+);
 module.exports = user_routes

@@ -5,7 +5,7 @@ var dbconnection = mysql.createConnection({
     user: 'root',
     password: '',
     database: 'droport_new',
-    debug: true
+    //debug: true
 });
 
 dbconnection.connect(function(err){
